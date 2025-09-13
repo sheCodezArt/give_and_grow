@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Community Impact — Donate & Volunteer (Local Demo)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* ----------------------------------------
+     Theme: Aqua + Orange-Yellow
+     Single-file advanced donation/volunteer microsite
+     ----------------------------------------*/
+  :root{
+    --aqua:#0fb8b3;
+    --aqua-600:#0aa399;
+    --accent:#ff9f1c;
+    --accent-700:#e88f1a;
+    --muted:#f6f9f8;
+    --card:#ffffff;
+    --text:#123;
+    --glass: rgba(255,255,255,0.7);
+    --radius:12px;
+    --shadow: 0 10px 30px rgba(8,10,12,0.08);
+    --maxw:1150px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#f7fbfb 0%, #ffffff 100%);color:var(--text);-webkit-font-smoothing:antialiased}
+  a{color:var(--aqua)}
+  /* Header */
+  header{background:linear-gradient(90deg, rgba(15,184,179,0.08), rgba(255,159,28,0.03));backdrop-filter: blur(2px);position:sticky;top:0;z-index:60}
+  .nav{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px;gap:16px}
+  #p-header{display: none;}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--aqua),var(--aqua-600));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
+  .brand h1{margin:0;font-size:18px;letter-spacing:0.4px}
+  .nav-actions{display:flex;gap:10px;align-items:center}
+  .primary{background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:10px;cursor:pointer;box-shadow:0 8px 20px rgba(232,143,26,0.12)}
+  .ghost{background:transparent;border:1px solid rgba(18,30,40,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
+  .link-row{display:flex;gap:14px}
+  .link-row a{text-decoration:none;color:#0b3b3a;font-weight:600}
+  /* Layout */
+  .wrap{max-width:var(--maxw);margin:26px auto;padding:0 18px}
+  .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:28px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f2fdfc);box-shadow:var(--shadow)}
+  .hero-left h2{margin:0 0 12px;font-size:28px;color:#0a5653}
+  .hero-left p{margin:0 0 18px;color:#365b59}
+  .hero-cta{display:flex;gap:10px;align-items:center}
+  .stat-grid{display:flex;gap:12px;margin-top:18px}
+  .stat{background:linear-gradient(180deg,var(--muted),#fff);padding:12px;border-radius:10px;min-width:110px;text-align:center}
+  .hero-right{position:relative}
+  /* campaign widget (right) */
+  .campaign-card{background:linear-gradient(180deg,#ffffff,#fbfffe);padding:18px;border-radius:12px;border:1px solid rgba(6,10,10,0.03)}
+  .campaign-title{font-weight:700;margin-bottom:6px}
+  .progress-wrap{margin-top:12px}
+  .progress-bar{height:14px;background:linear-gradient(90deg, rgba(10,163,153,0.15), rgba(255,159,28,0.08));border-radius:10px;overflow:hidden}
+  .progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--aqua),var(--accent));transition:width .6s ease}
+  .goal-row{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:#234}
+  .small{font-size:13px;color:#4b6b6a}
+  /* campaigns list */
+  .section{margin-top:28px}
+  h3.section-title{margin:0 0 12px;font-size:20px;color:#0a4745}
+  .campaigns{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .campaign{background:var(--card);padding:14px;border-radius:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;transition:transform .18s}
+  .campaign:hover{transform:translateY(-6px)}
+  .campaign img{width:100%;height:140px;object-fit:cover;border-radius:8px}
+  .campaign .meta{display:flex;justify-content:space-between;align-items:center}
+  .tags{display:flex;gap:8px}
+  .tag{padding:6px 8px;border-radius:999px;background:rgba(11,59,58,0.06);font-size:13px}
+  /* donation form area (large) */
+  .donation-area{margin-top:18px;background:linear-gradient(180deg,#ffffff,#fbfffe);padding:18px;border-radius:12px;box-shadow:var(--shadow);display:flex;gap:18px;align-items:flex-start}
+  .donation-left{flex:1}
+  .donation-right{width:360px;min-height:280px}
+  .amounts{display:flex;flex-wrap:wrap;gap:10px}
+  .amt-btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(6,10,10,0.05);background:white;cursor:pointer;transition:transform .12s,box-shadow .12s}
+  .amt-btn:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(11,59,58,0.06)}
+  .amt-btn.active{background:linear-gradient(90deg,var(--aqua),var(--aqua-600));color:white;border:none;box-shadow:0 10px 30px rgba(15,184,179,0.12)}
+  .row{display:flex;gap:10px;align-items:center}
+  input[type=number], input[type=text], input[type=email], select{padding:10px;border-radius:8px;border:1px solid rgba(6,10,10,0.06);width:100%}
+  label{font-size:13px;color:#234;margin-bottom:6px;display:block}
+  .muted{color:#556f6e;font-size:13px}
+  .donate-actions{display:flex;gap:8px;margin-top:12px}
+  .small-ghost{background:transparent;border:1px solid rgba(6,10,10,0.06);padding:8px 10px;border-radius:8px;cursor:pointer}
+  /* donor wall */
+  .donor-wall{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+  .donor{background:linear-gradient(180deg,#ffffff,#fbfffe);padding:10px;border-radius:8px;box-shadow:0 6px 18px rgba(11,59,58,0.04)}
+  .donor small{color:#456}
+  /* volunteer signup */
+  .join-card{padding:14px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fcfffb);box-shadow:var(--shadow)}
+  /* events */
+  .events{display:flex;flex-direction:column;gap:8px}
+  .event{display:flex;gap:12px;align-items:center;background:#fff;padding:10px;border-radius:10px;border:1px solid rgba(6,10,10,0.03)}
+  .event .date{min-width:64px;padding:8px;border-radius:8px;background:linear-gradient(180deg,#f0fffe,#fff);text-align:center}
+  /* testimonials */
+  .testimonials{display:flex;gap:12px;overflow:hidden}
+  .test{min-width:300px;background:var(--card);padding:12px;border-radius:12px;box-shadow:var(--shadow)}
+  /* faq */
+  .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .faq-item{background:linear-gradient(180deg,#ffffff,#fbfffe);padding:12px;border-radius:10px;border:1px solid rgba(6,10,10,0.03)}
+  /* admin modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(4,12,12,0.5);display:flex;align-items:center;justify-content:center;z-index:200}
+  .modal{width:min(920px,96%);background:white;border-radius:12px;padding:16px;box-shadow:0 30px 60px rgba(2,8,8,0.6)}
+  .table{width:100%;border-collapse:collapse}
+  .table th, .table td{padding:8px 10px;border-bottom:1px solid #eef7f6;font-size:14px;text-align:left}
+  /* small utility */
+  .kbd{background:#f0f7f6;padding:6px 8px;border-radius:6px;border:1px solid rgba(6,10,10,0.04)}
+  /* responsive */
+  @media (max-width:1100px){ .hero{grid-template-columns:1fr 360px} .campaigns{grid-template-columns:repeat(2,1fr)} .donation-right{width:320px} }
+  @media (max-width:800px){
+    .nav {display: none;}
+    .hero{grid-template-columns:1fr;gap:12px}
+    .campaigns{grid-template-columns:1fr}
+    .donation-area{flex-direction:column}
+    .donation-right{width:100%}
+    .donor-wall{grid-template-columns:1fr}
+    .form-grid{display:block}
+    .faq{grid-template-columns:1fr}
+    #p-header{display:block}
+    #nav-links {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  gap: 25px;
+  align-items: center;
+}
+
+#nav-links li a {
+  text-decoration: none;
+  color: #212121;
+  font-size: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.3s ease;
+}
+
+#nav-links li a:hover {
+  color: #06a340;
+}
+  }
+  /* simple animation helpers */
+  .fade-up{opacity:0;transform:translateY(10px);animation:fadeUpIn .6s ease forwards}
+  @keyframes fadeUpIn{to{opacity:1;transform:none}}
+  .pop{transform:scale(.98);transition:transform .12s ease}
+  .pop:hover{transform:none}
+  /* focus */
+  button:focus, input:focus, select:focus{outline:3px solid rgba(15,184,179,0.12);outline-offset:2px}
+  footer{margin-top:28px;padding:18px;text-align:center;color:#345;background:linear-gradient(90deg,#e7fafa,#fff6ee)}
+</style>
+</head>
+<body>
+<header>
+  <div class="nav" role="navigation" aria-label="Main navigation">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">CI</div>
+      <div>
+        <h1 style="margin:0;font-size:16px">Community Impact</h1>
+        <div style="font-size:12px;color:#356">Local demo • Campaigns & Volunteers</div>
+      </div>
+    </div>
+
+    <div class="link-row" aria-hidden="false">
+      <a href="#campaigns">Campaigns</a>
+      <a href="#donate">Donate</a>
+      <a href="#volunteer">Volunteer</a>
+      <a href="#events">Events</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <div class="nav-actions">
+      <button class="ghost" id="adminBtn" title="Admin">Admin</button>
+      <button class="primary" onclick="document.getElementById('donate').scrollIntoView({behavior:'smooth'})">Donate</button>
+    </div>
+  </div>
+  
+  <!-- Phone nav -->
+  <div id="p-header">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">CI</div>
+      <div>
+        <h1 style="margin:0;font-size:16px">Community Impact</h1>
+        <div style="font-size:12px;color:#356">Local demo • Campaigns & Volunteers</div>
+      </div>
+      <div>
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </div>
+    </div>
+    
+    <nav id="navbar">
+      <ul id="nav-links">
+        <li><a href="#">Campaign</a></li>
+        <li><a href="#">Donate</a></li>
+        <li><a href="#">Volunteer</a></li>
+        <li><a href="#">Events</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      
+       <!-- Access Buttons -->
+      <div class="nav-actions" style="display: flex; flex-direction: column;">
+      <button class="ghost" id="adminBtn" title="Admin" style="width: 200px;">Admin</button><br>
+      <button class="primary" onclick="document.getElementById('donate').scrollIntoView({behavior:'smooth'})" style="width: 200px;">Donate</button>
+    </div>
+    </nav>
+  </div>
+  
+</header>
+
+<main class="wrap" id="top">
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-left fade-up" style="animation-delay:.05s">
+      <h2 id="hero-title">Support Local Communities • Stand with neighbors in need</h2>
+      <p>We fund relief, education, and community projects. Choose a campaign, donate safely (simulated), and get a downloadable tax receipt.</p>
+      <div class="hero-cta">
+        <button class="primary" onclick="scrollTo('#donate')">Donate Now</button>
+        <button class="ghost" onclick="scrollTo('#volunteer')">Volunteer</button>
+      </div>
+
+      <div class="stat-grid" aria-hidden="true">
+        <div class="stat"><div style="font-weight:700;font-size:18px" id="totalRaisedDisplay">$0</div><div class="small">Raised</div></div>
+        <div class="stat"><div style="font-weight:700;font-size:18px" id="donorCount">0</div><div class="small">Donors</div></div>
+        <div class="stat"><div style="font-weight:700;font-size:18px" id="volCount">0</div><div class="small">Volunteers</div></div>
+      </div>
+    </div>
+
+    <aside class="hero-right fade-up" style="animation-delay:.12s">
+      <div class="campaign-card">
+        <div class="campaign-title" id="selectedCampaignTitle">Solidarity Fund</div>
+        <div class="small">A short description of this campaign and how funds will be used.</div>
+
+        <div class="progress-wrap">
+          <div class="progress-bar" aria-hidden="true"><div class="progress-fill" id="campaignProgress"></div></div>
+          <div class="goal-row"><div id="raisedLabel">$0 raised</div><div id="goalLabel">$5,000 goal</div></div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+          <button class="primary" onclick="scrollTo('#donate')">Donate</button>
+          <button class="small-ghost" onclick="shareCampaign()">Share</button>
+        </div>
+
+        <div style="margin-top:10px;font-size:13px;color:#456">Tax ID: <span class="kbd">94-3201522</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- CAMPAIGNS -->
+  <section id="campaigns" class="section">
+    <h3 class="section-title">Active Campaigns</h3>
+    <div class="campaigns">
+      <!-- campaign 1 -->
+      <article class="campaign fade-up" style="animation-delay:.06s" data-id="c1">
+        <img src="https://images.unsplash.com/photo-1531973968078-9bb02785f13d?q=80&w=800&auto=format&fit=crop" alt="">
+        <div class="meta">
+          <div><strong>Community Relief</strong><div class="small">Emergency support for families</div></div>
+          <div class="tags"><div class="tag">Relief</div></div>
+        </div>
+        <p class="small">Fast response grants to families affected by disaster and eviction risk.</p>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+          <div class="muted">Goal: $8,000</div>
+          <div><button class="ghost" onclick="selectCampaign('c1')">Select</button></div>
+        </div>
+      </article>
+
+      <!-- campaign 2 -->
+      <article class="campaign fade-up" style="animation-delay:.09s" data-id="c2">
+        <img src="https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=800&auto=format&fit=crop" alt="">
+        <div class="meta">
+          <div><strong>Youth Mentorship</strong><div class="small">Mentors for after-school programs</div></div>
+          <div class="tags"><div class="tag">Education</div></div>
+        </div>
+        <p class="small">Training and paying local tutors & mentors for hands-on programs.</p>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+          <div class="muted">Goal: $4,000</div>
+          <div><button class="ghost" onclick="selectCampaign('c2')">Select</button></div>
+        </div>
+      </article>
+
+      <!-- campaign 3 -->
+      <article class="campaign fade-up" style="animation-delay:.12s" data-id="c3">
+        <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop" alt="">
+        <div class="meta">
+          <div><strong>Food Security</strong><div class="small">Food boxes & community kitchens</div></div>
+          <div class="tags"><div class="tag">Nutrition</div></div>
+        </div>
+        <p class="small">Support local kitchens and mobile food delivery for seniors and families.</p>
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center">
+          <div class="muted">Goal: $6,000</div>
+          <div><button class="ghost" onclick="selectCampaign('c3')">Select</button></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- DONATION AREA -->
+  <section id="donate" class="section">
+    <h3 class="section-title">Donate — Choose an amount</h3>
+
+    <div class="donation-area fade-up" style="animation-delay:.08s">
+      <div class="donation-left">
+        <div>
+          <label for="donorName">Full name</label>
+          <input id="donorName" type="text" placeholder="Jane Doe" required />
+        </div>
+
+        <div style="margin-top:10px">
+          <label for="donorEmail">Email (for receipt)</label>
+          <input id="donorEmail" type="email" placeholder="name@example.com" required />
+        </div>
+
+        <div style="margin-top:12px">
+          <label>Choose amount</label>
+          <div class="amounts">
+            <button class="amt-btn" data-amt="25">$25</button>
+            <button class="amt-btn" data-amt="50">$50</button>
+            <button class="amt-btn" data-amt="100">$100</button>
+            <button class="amt-btn" data-amt="250">$250</button>
+            <button class="amt-btn" data-amt="500">$500</button>
+            <button class="amt-btn" data-amt="1000">$1,000</button>
+            <div style="flex:0 0 160px"><input id="customAmt" type="number" min="1" placeholder="Custom $" /></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+          <label class="muted"><input id="recurring" type="checkbox"> Make this a recurring monthly donation</label>
+          <label class="muted"><input id="matching" type="checkbox"> Match donation (company match x2)</label>
+        </div>
+
+        <div class="donate-actions" style="margin-top:14px">
+          <button class="primary" id="startDonateBtn">Proceed to Donate</button>
+          <button class="small-ghost" id="previewBtn">Preview Receipt</button>
+        </div>
+
+        <div style="margin-top:14px" class="muted">
+          <strong>Selected campaign:</strong> <span id="selectedCampaignName">Solidarity Fund</span>
+        </div>
+
+        <div style="margin-top:18px">
+          <h4 style="margin:0 0 8px">Why give?</h4>
+          <p class="small">100% of donations listed here are used for community partners and projects. This is a local demo — payments are simulated.</p>
+        </div>
+      </div>
+
+      <aside class="donation-right">
+        <div style="padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#fcfffb);box-shadow:0 8px 24px rgba(11,59,58,0.04)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">Summary</div>
+            <div class="muted" id="summaryType">One-time</div>
+          </div>
+
+          <div style="margin-top:10px">
+            <div class="row"><div style="flex:1">Donation</div><div id="summaryAmount" style="font-weight:700">$0</div></div>
+            <div class="row" style="margin-top:8px"><div style="flex:1">Matching</div><div id="summaryMatch" class="muted">$0</div></div>
+            <div class="row" style="margin-top:8px"><div style="flex:1">Campaign</div><div id="summaryCampaign" class="muted">Solidarity Fund</div></div>
+            <div style="margin-top:12px"><button class="primary" id="confirmDonateBtn">Confirm & Donate</button></div>
+            <div style="margin-top:8px;font-size:13px;color:#456">You will receive a downloadable receipt after confirmation.</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px" class="join-card">
+          <div style="font-weight:700">Donor Wall <small class="muted">— recent supporters</small></div>
+          <div id="donorWall" class="donor-wall" style="margin-top:8px"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- VOLUNTEER SIGNUP -->
+  <section id="volunteer" class="section">
+    <h3 class="section-title">Volunteer — Join Our Team</h3>
+    <div style="display:grid;grid-template-columns:1fr 340px;gap:18px">
+      <div class="join-card fade-up">
+        <p class="small">Sign up to volunteer for events, tutoring, and community outreach. We'll send more info by email.</p>
+        <form id="volForm" onsubmit="registerVolunteer(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" class="form-grid">
+            <input id="vname" placeholder="Full name" required />
+            <input id="vemail" type="email" placeholder="Email" required />
+            <input id="vphone" placeholder="Phone" />
+            <select id="vinterest"><option>Area of interest</option><option>Community Clean-Up</option><option>Food Drive</option><option>Mentorship</option></select>
+          </div>
+          <div style="margin-top:12px">
+            <button class="primary" type="submit">Join as Volunteer</button>
+          </div>
+          <div style="margin-top:8px;color:#246" id="volMsg"></div>
+        </form>
+      </div>
+
+      <aside>
+        <div class="events fade-up">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:700">Upcoming Events</div><div class="muted">Local calendar</div></div>
+          <div class="event"><div class="date">Sep 12</div><div><strong>Park Clean-Up</strong><div class="small">Meet at 9am • All ages</div></div></div>
+          <div class="event"><div class="date">Oct 03</div><div><strong>Food Pack & Deliver</strong><div class="small">Volunteer slots available</div></div></div>
+          <div class="event"><div class="date">Nov 15</div><div><strong>Mentor Training</strong><div class="small">Online • 6pm</div></div></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- FAQ & Testimonials -->
+  <section class="section">
+    <div style="display:grid;grid-template-columns:1fr 360px;gap:18px">
+      <div>
+        <h3 class="section-title">Frequently Asked Questions</h3>
+        <div class="faq">
+          <div class="faq-item"><strong>Where do donations go?</strong><p class="small">Funds are allocated to local nonprofit partners and project grants; admin is minimal.</p></div>
+          <div class="faq-item"><strong>Will I get a tax receipt?</strong><p class="small">Yes — you can download a simple tax receipt after donating (this demo creates a file locally).</p></div>
+          <div class="faq-item"><strong>Is my donation secure?</strong><p class="small">This demo simulates payments — for production you’d integrate with a payment gateway (Stripe/PayPal).</p></div>
+          <div class="faq-item"><strong>Can I volunteer remotely?</strong><p class="small">Yes — mentoring & training sessions are often remote.</p></div>
+        </div>
+      </div>
+
+      <aside>
+        <h3 class="section-title">What our community says</h3>
+        <div class="testimonials">
+          <div class="test">“This fund helped my family get back on its feet.” — <small>Rita</small></div>
+          <div class="test">“Volunteering gave me purpose.” — <small>Daniel</small></div>
+          <div class="test">“Fast and clear impact reporting.” — <small>Marisol</small></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <h3 class="section-title">Contact & Connect</h3>
+    <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start">
+      <div style="flex:1">
+        <p class="small">Email: <a href="mailto:contact@community.local">contact@community.local</a> • Phone: +1 (555) 123-4567</p>
+        <p class="small">Address: 123 Community Lane, City</p>
+      </div>
+      <div style="width:320px">
+        <div style="background:linear-gradient(180deg,#fff,#fcfffb);padding:12px;border-radius:12px;box-shadow:var(--shadow)">
+          <div style="font-weight:700">Stay updated</div>
+          <p class="small">Sign up for our newsletter (stored locally in demo)</p>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="newsEmail" placeholder="Your email" />
+            <button class="primary" onclick="subscribeNews()">Sign</button>
+          </div>
+          <div id="newsMsg" style="margin-top:8px;color:#246"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="muted">© 2025 Community Impact • Local Demo — not a real charity</div>
+  </footer>
+</main>
+
+<!-- ADMIN / MODALS placeholder -->
+<div id="modalWrap" style="display:none;"></div>
+
+<script>
+/* ------------------------------
+   App state & utilities (local-only demo)
+   ------------------------------ */
+const campaigns = {
+  c1:{id:'c1',title:'Community Relief',goal:8000,raised:1200},
+  c2:{id:'c2',title:'Youth Mentorship',goal:4000,raised:980},
+  c3:{id:'c3',title:'Food Security',goal:6000,raised:2340},
+  default:'c1'
+};
+
+let state = {
+  campaignId:'c1'
+};
+
+function $(sel){return document.querySelector(sel)}
+function $all(sel){return Array.from(document.querySelectorAll(sel))}
+
+/* persistence keys */
+const STORAGE_KEYS = {
+  donors:'ci_donors_v1',
+  volunteers:'ci_vols_v1',
+  stats:'ci_stats_v1'
+};
+
+function loadDonors(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEYS.donors)||'[]') }catch(e){return []} }
+function saveDonors(list){ localStorage.setItem(STORAGE_KEYS.donors, JSON.stringify(list)) }
+
+function loadVols(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEYS.volunteers)||'[]') }catch(e){return []} }
+function saveVols(list){ localStorage.setItem(STORAGE_KEYS.volunteers, JSON.stringify(list)) }
+
+function loadStats(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEYS.stats)||'{}') }catch(e){return {} } }
+function saveStats(s){ localStorage.setItem(STORAGE_KEYS.stats, JSON.stringify(s)) }
+
+/* initial render */
+function init(){
+  // default campaign selected
+  selectCampaign('c1', {silent:true});
+  // wire up amount buttons
+  $all('.amt-btn').forEach(b=>{
+    b.addEventListener('click', (e)=>{
+      $all('.amt-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      $('#customAmt').value = '';
+      updateSummary();
+    });
+  });
+  $('#customAmt').addEventListener('input', ()=>{
+    $all('.amt-btn').forEach(x=>x.classList.remove('active'));
+    updateSummary();
+  });
+
+  // preview & proceed
+  $('#previewBtn').addEventListener('click', previewReceipt);
+  $('#startDonateBtn').addEventListener('click', ()=> scrollTo('#donate'));
+
+  $('#confirmDonateBtn').addEventListener('click', confirmDonate);
+
+  // admin
+  $('#adminBtn').addEventListener('click', openAdmin);
+
+  // donor wall populate
+  renderDonorWall();
+
+  // volunteer form
+  $('#volForm').addEventListener('submit', registerVolunteer);
+
+  // newsletter
+  const stats = loadStats() || {};
+  renderStats();
+
+  // update summary on input
+  $('#donorName').addEventListener('input', updateSummary);
+  $('#donorEmail').addEventListener('input', updateSummary);
+  $('#recurring').addEventListener('change', updateSummary);
+  $('#matching').addEventListener('change', updateSummary);
+  $('#customAmt').addEventListener('input', updateSummary);
+  $all('[data-amt]').forEach(b=>b.addEventListener('click', updateSummary));
+
+  // start small animations (testimonials scroll)
+  startTestimonialScroll();
+}
+
+function selectCampaign(id, opts={}){
+  state.campaignId = id;
+  const c = campaigns[id];
+  $('#selectedCampaignTitle').textContent = c.title;
+  $('#selectedCampaignName').textContent = c.title;
+  $('#summaryCampaign').textContent = c.title;
+  $('#goalLabel').textContent = `$${numberWithCommas(c.goal)} goal`;
+  updateCampaignProgressUI(c);
+  if(!opts.silent) scrollTo('#donate');
+}
+
+function updateCampaignProgressUI(c){
+  const pct = Math.min(100, Math.round((c.raised / c.goal) * 100));
+  $('#campaignProgress').style.width = pct + '%';
+  $('#raisedLabel').textContent = `$${numberWithCommas(c.raised)} raised`;
+  $('#totalRaisedDisplay').textContent = `$${numberWithCommas(totalRaised())}`;
+  $('#donorCount').textContent = loadDonors().length;
+}
+
+function totalRaised(){
+  const ds = loadDonors();
+  return ds.reduce((s,d)=>s + (d.amount_total||0), Object.values(campaigns).reduce((s,c)=>s + 0,0));
+}
+
+/* formatting helper */
+function numberWithCommas(x){ return x.toLocaleString() }
+
+/* Summary update */
+function getSelectedAmount(){
+  const active = document.querySelector('.amt-btn.active');
+  if(active) return Number(active.dataset.amt);
+  const custom = Number($('#customAmt').value);
+  return isNaN(custom) || custom <= 0 ? 0 : custom;
+}
+
+function updateSummary(){
+  const amt = getSelectedAmount();
+  const recurring = $('#recurring').checked;
+  const matching = $('#matching').checked;
+  const matchAmt = matching ? amt : 0;
+  $('#summaryAmount').textContent = amt>0 ? `$${numberWithCommas(amt)}` : '$0';
+  $('#summaryMatch').textContent = matchAmt>0 ? `$${numberWithCommas(matchAmt)}` : '$0';
+  $('#summaryType').textContent = recurring ? 'Monthly (Recurring)' : 'One-time';
+}
+
+/* donation flow (simulate) */
+function confirmDonate(){
+  const name = $('#donorName').value.trim();
+  const email = $('#donorEmail').value.trim();
+  const amt = getSelectedAmount();
+  if(!name || !email){ alert('Please provide name and email for a receipt.'); return; }
+  if(!amt || amt <= 0){ alert('Please choose a donation amount.'); return; }
+
+  // gather options
+  const recurring = $('#recurring').checked;
+  const matching = $('#matching').checked;
+  const campaign = state.campaignId;
+  const matchAmt = matching ? amt : 0;
+  const total = amt + matchAmt;
+
+  // simulate processing
+  showModal(`<div style="padding:12px"><h3 style="margin-top:0">Processing donation...</h3><p class="small">Simulating secure payment for ${name} — please wait.</p></div>`);
+  setTimeout(()=>{
+    // save donor
+    const donors = loadDonors();
+    const donor = {
+      id: 'd_' + Date.now(),
+      name, email, amount: amt, matching: matchAmt, amount_total: total, recurring, campaign, date: new Date().toISOString()
+    };
+    donors.unshift(donor);
+    saveDonors(donors);
+
+    // update campaign raised
+    campaigns[campaign].raised += total;
+
+    // update stats
+    const stats = loadStats();
+    stats.lastDonor = name;
+    saveStats(stats);
+
+    // close processing modal and show success
+    closeModal();
+    showModal(`<div style="padding:12px"><h3>Thank you, ${escapeHtml(name)}!</h3><p class="small">Your donation of <strong>$${numberWithCommas(total)}</strong> to <strong>${campaigns[campaign].title}</strong> was recorded (simulated).</p>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="primary" id="dlReceipt">Download Receipt</button>
+        <button class="ghost" id="closeThanks">Close</button>
+      </div></div>`);
+    $('#dlReceipt').addEventListener('click', ()=> downloadReceipt(donor));
+    $('#closeThanks').addEventListener('click', ()=>{ closeModal(); });
+
+    // refresh UI
+    updateCampaignProgressUI(campaigns[campaign]);
+    renderDonorWall();
+    updateSummary();
+    $('#donorName').value=''; $('#donorEmail').value=''; $('#customAmt').value=''; $all('.amt-btn').forEach(x=>x.classList.remove('active'));
+  }, 900);
+}
+
+/* donor wall */
+function renderDonorWall(){
+  const wall = $('#donorWall');
+  wall.innerHTML = '';
+  const donors = loadDonors().slice(0,9);
+  if(donors.length===0){ wall.innerHTML = '<div class="muted">No donors yet — be the first!</div>'; return; }
+  donors.forEach(d=>{
+    const el = document.createElement('div');
+    el.className='donor';
+    el.innerHTML = `<div><strong>${escapeHtml(d.name)}</strong> <small class="muted">— ${new Date(d.date).toLocaleDateString()}</small></div><div><small>${d.campaign}</small></div><div style="margin-top:6px"><strong>$${numberWithCommas(d.amount_total)}</strong></div>`;
+    wall.appendChild(el);
+  });
+}
+
+/* receipt download (simple TXT; browsers can open/save as .txt or .pdf by user) */
+function downloadReceipt(donor){
+  const txt = `Receipt\n\nOrganization: Community Impact (demo)\nDonor: ${donor.name}\nEmail: ${donor.email}\nCampaign: ${campaigns[donor.campaign].title}\nAmount: $${donor.amount}\nMatching: $${donor.matching}\nTotal: $${donor.amount_total}\nDate: ${new Date(donor.date).toLocaleString()}\nTax ID: 94-3201522\n\nThis is a simulated receipt for demo purposes.`;
+  const blob = new Blob([txt], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `receipt_${donor.id}.txt`; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+
+/* Preview receipt before donating */
+function previewReceipt(){
+  const name = $('#donorName').value.trim() || 'Sample Donor';
+  const email = $('#donorEmail').value.trim() || 'you@example.com';
+  const amt = getSelectedAmount();
+  const matching = $('#matching').checked;
+  const matchAmt = matching ? amt : 0;
+  const total = amt + matchAmt;
+  const html = `<div style="padding:12px"><h3>Receipt Preview</h3>
+    <p class="small">Donor: <strong>${escapeHtml(name)}</strong><br>Email: ${escapeHtml(email)}<br>Amount: <strong>$${numberWithCommas(amt)}</strong><br>Matching: <strong>$${numberWithCommas(matchAmt)}</strong><br>Total: <strong>$${numberWithCommas(total)}</strong></p>
+    <div style="display:flex;gap:8px"><button class="primary" id="closePreview">Close</button></div></div>`;
+  showModal(html);
+  $('#closePreview').addEventListener('click', closeModal);
+}
+
+/* Volunteer registration */
+function registerVolunteer(e){
+  e && e.preventDefault && e.preventDefault();
+  const name = $('#vname').value.trim();
+  const email = $('#vemail').value.trim();
+  const phone = $('#vphone').value.trim();
+  const interest = $('#vinterest').value;
+  if(!name || !email){ alert('Please provide name and email.'); return; }
+  const vols = loadVols();
+  const v = {id:'v_' + Date.now(), name, email, phone, interest, date: new Date().toISOString()};
+  vols.unshift(v);
+  saveVols(vols);
+  $('#volMsg').textContent = `Thanks ${name}! We'll be in touch via ${email}.`;
+  $('#vname').value=''; $('#vemail').value=''; $('#vphone').value=''; $('#vinterest').value='';
+  // update volunteer count
+  $('#volCount').textContent = vols.length;
+}
+
+/* News subscription */
+function subscribeNews(){
+  const email = $('#newsEmail').value.trim();
+  if(!email){ $('#newsMsg').textContent = 'Please enter an email.'; return;}
+  $('#newsMsg').textContent = `Thanks — ${email} subscribed (local demo).`;
+  $('#newsEmail').value = '';
+}
+
+/* Admin panel (local) */
+function openAdmin(){
+  // simple PIN prompt (demo only)
+  const pin = prompt('Enter admin PIN (demo):');
+  if(pin !== '1234'){ alert('Wrong PIN. Use 1234 for demo.'); return; }
+  const donors = loadDonors();
+  const vols = loadVols();
+  const html = `<div style="padding:12px"><h2>Admin — Donors (${donors.length})</h2>
+    <div style="margin-bottom:10px"><button class="primary" id="exportCSV">Export Donors CSV</button> <button class="ghost" id="resetAll">Reset Data</button> <button class="ghost" id="closeAdmin">Close</button></div>
+    <div style="max-height:400px;overflow:auto;border-radius:8px;border:1px solid rgba(6,10,10,0.03)">
+      <table class="table"><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Campaign</th><th>Amount</th></tr></thead><tbody>
+      ${donors.map(d=>`<tr><td>${new Date(d.date).toLocaleString()}</td><td>${escapeHtml(d.name)}</td><td>${escapeHtml(d.email)}</td><td>${escapeHtml(campaigns[d.campaign].title)}</td><td>$${numberWithCommas(d.amount_total)}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <h3 style="margin-top:14px">Volunteers (${vols.length})</h3>
+    <div style="max-height:180px;overflow:auto;border-radius:8px;border:1px solid rgba(6,10,10,0.03)">
+      <table class="table"><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Interest</th></tr></thead><tbody>
+      ${vols.map(v=>`<tr><td>${new Date(v.date).toLocaleString()}</td><td>${escapeHtml(v.name)}</td><td>${escapeHtml(v.email)}</td><td>${escapeHtml(v.interest)}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    </div>`;
+  showModal(html);
+  $('#exportCSV').addEventListener('click', ()=> exportDonorsCSV(donors));
+  $('#resetAll').addEventListener('click', ()=>{ if(confirm('Reset all local demo data?')){ localStorage.removeItem(STORAGE_KEYS.donors); localStorage.removeItem(STORAGE_KEYS.volunteers); closeModal(); location.reload(); }});
+  $('#closeAdmin').addEventListener('click', closeModal);
+}
+
+/* export donors as CSV */
+function exportDonorsCSV(list){
+  const header = ['id','date','name','email','campaign','amount','matching','total','recurring'];
+  const rows = list.map(d=>[d.id, d.date, d.name, d.email, campaigns[d.campaign].title, d.amount, d.matching, d.amount_total, d.recurring].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [header.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `donors_${Date.now()}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+/* share campaign (text) */
+function shareCampaign(){
+  const c = campaigns[state.campaignId];
+  const text = `Support ${c.title} — donate today to help local families. This is a demo: ${location.href}`;
+  try{
+    navigator.share ? navigator.share({text, title:c.title}) : (function(){ navigator.clipboard.writeText(text); alert('Campaign text copied to clipboard (demo).'); })();
+  }catch(e){ navigator.clipboard && navigator.clipboard.writeText(text).then(()=>alert('Copied to clipboard'))}
+}
+
+/* modal helpers */
+function showModal(inner){
+  const wrap = $('#modalWrap');
+  wrap.innerHTML = `<div class="modal-backdrop" id="mb"><div class="modal" role="dialog" aria-modal="true">${inner}</div></div>`;
+  wrap.style.display = 'block';
+}
+function closeModal(){ $('#modalWrap').style.display = 'none'; $('#modalWrap').innerHTML = ''; }
+
+/* utility */
+function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+
+/* scroll helper */
+function scrollTo(sel){ const el = document.querySelector(sel); if(el) el.scrollIntoView({behavior:'smooth'}); }
+
+/* small UI: testimonials auto-scroll */
+function startTestimonialScroll(){
+  const t = document.querySelector('.testimonials');
+  if(!t) return;
+  let offset = 0;
+  setInterval(()=>{ offset = (offset + 304) % (t.scrollWidth || 900); t.scrollTo({left:offset,behavior:'smooth'}) }, 3500);
+}
+
+/* init app */
+init();
+
+/* helper: show initial totals based on storage */
+(function refreshTotals(){
+  // compute totals from donors
+  const donors = loadDonors();
+  const total = donors.reduce((s,d)=>s + (d.amount_total||0), 0);
+  // add campaign raised amounts (initial base)
+  Object.values(campaigns).forEach(c=>{ total; /* no-op to avoid linter */ });
+  $('#totalRaisedDisplay').textContent = `$${numberWithCommas(total + Object.values(campaigns).reduce((s,c)=>s + c.raised, 0))}`;
+  $('#donorCount').textContent = donors.length;
+  $('#volCount').textContent = loadVols().length;
+  // update selected campaign UI
+  updateCampaignProgressUI(campaigns[state.campaignId]);
+})();
+
+</script>
+</body>
+</html>
