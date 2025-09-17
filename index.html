@@ -39,6 +39,8 @@
   .ghost{background:transparent;border:1px solid rgba(18,30,40,0.06);padding:8px 12px;border-radius:10px;cursor:pointer}
   .link-row{display:flex;gap:14px}
   .link-row a{text-decoration:none;color:#0b3b3a;font-weight:600}
+  #navbar { display:none; }
+  #navbar.open { display:block; }
   /* Layout */
   .wrap{max-width:var(--maxw);margin:26px auto;padding:0 18px}
   .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:28px;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f2fdfc);box-shadow:var(--shadow)}
@@ -456,6 +458,15 @@
 /* ------------------------------
    App state & utilities (local-only demo)
    ------------------------------ */
+  const bar = document.querySelector('#p-header .fa-bars');
+const navbar = document.getElementById('navbar');
+bar.addEventListener('click', () => {
+  navbar.classList.toggle('open');
+});
+
+
+   
+   
 const campaigns = {
   c1:{id:'c1',title:'Community Relief',goal:8000,raised:1200},
   c2:{id:'c2',title:'Youth Mentorship',goal:4000,raised:980},
