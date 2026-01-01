@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sheCodez | Welcome To My Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800&family=Playfair+Display:ital,wght@0,900;1,900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #0a0a0a;
+            --accent: #c2410c;
+            --secondary: #f4f4f5;
+            --border: rgba(0,0,0,0.08);
+            --transition: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg: #09090b;
+            --text: #fafafa;
+            --accent: #fb923c;
+            --secondary: #18181b;
+            --border: rgba(255,255,255,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            transition: background 0.5s var(--transition);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif { font-family: 'Playfair Display', serif; }
+        ul { list-style: none; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 1s cubic-bezier(1, 0, 0, 1);
+        }
+        .loader-content { text-align: center; color: white; }
+        .loader-line { width: 170px; height: 2px; background: rgba(255,255,255,0.2); margin: 20px auto; position: relative; overflow: hidden; }
+        .loader-line::after { content: ''; position: absolute; left: -100%; width: 100%; height: 100%; background: var(--accent); animation: loading 1.5s infinite; }
+        @keyframes loading { 100% { left: 100%; } }
+        .loaded #preloader { transform: translateY(-100%); }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; width: 100%; height: 85px;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+            display: grid; grid-template-columns: 200px 1fr auto; align-items: center;
+            padding: 0 5%; z-index: 1000;
+        }
+        .logo { font-size: 1.8rem; font-weight: 800; letter-spacing: -1.5px; }
+        
+        .nav-links { display: flex; gap: 25px; justify-content: center; }
+        .nav-links a { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; transition: 0.3s; }
+        .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .status-dot { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .theme-toggle { background: var(--text); color: var(--bg); border: none; padding: 8px 16px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; cursor: pointer; transition: 0.3s; }
+
+        /* Mobile Toggle */
+        .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; }
+
+        /* --- POPUP / MODAL --- */
+        #wattpad-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px); z-index: 2000;
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-content {
+            background: var(--bg); color: var(--text); padding: 50px;
+            max-width: 500px; text-align: center; position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3); border: 1px solid var(--border);
+        }
+        .modal-content h2 { font-size: 2.2rem; margin-bottom: 15px; }
+        .modal-content p { opacity: 0.7; margin-bottom: 30px; line-height: 1.6; }
+        .wattpad-link {
+            display: inline-block; padding: 15px 30px; background: var(--accent);
+            color: white; text-decoration: none; font-weight: 800; 
+            text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px;
+        }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; opacity: 0.5; }
+
+        /* --- HERO --- */
+        .hero { height: 80vh; display: flex; flex-direction: column; justify-content: center; padding: 0 5%; }
+        .hero h1 { font-size: clamp(3rem, 8vw, 6.5rem); line-height: 0.95; letter-spacing: -3px; }
+
+        /* --- GRID & NOVEL CARDS --- */
+        .grid-section { 
+            padding: 100px 5%; display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 50px; 
+        }
+        .novel-card {
+            background: var(--bg); opacity: 0; transform: translateY(30px); transition: 1s var(--transition);
+            display: flex; flex-direction: column;
+        }
+        .novel-card.visible { opacity: 1; transform: translateY(0); }
+        .card-img { height: 500px; overflow: hidden; position: relative; background: #000; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 1.2s var(--transition); opacity: 0.9; }
+        
+        .card-hover-info {
+            position: absolute; inset: 0; padding: 40px;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            color: white; display: flex; flex-direction: column; justify-content: center;
+            opacity: 0; transition: 0.5s var(--transition);
+        }
+        .btn-ghost { 
+            margin-top: 20px; padding: 10px 20px; border: 1px solid white; 
+            width: fit-content; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; cursor: pointer;
+        }
+        .novel-card:hover .card-img img { transform: scale(1.1); opacity: 0.4; }
+        .novel-card:hover .card-hover-info { opacity: 1; }
+
+        .card-content { padding: 30px 0; border-top: 1px solid var(--border); margin-top: 10px; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .price { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+        .category-line { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; font-weight: 700; margin-top: 5px; }
+
+        /* --- FOOTER --- */
+        footer { padding: 120px 5% 60px; background: var(--secondary); border-top: 1px solid var(--border); }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 80px; }
+        .footer-col { opacity: 0; transform: translateY(20px); transition: 0.8s var(--transition); }
+        .footer-col.visible { opacity: 1; transform: translateY(0); }
+        .footer-col h4 { font-size: 0.7rem; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 2px; color: var(--accent); }
+        
+        /* Newsletter with Button */
+        .newsletter-wrap { display: flex; gap: 10px; margin-top: 20px; }
+        footer input { 
+            flex: 1; padding: 15px; background: none; border: 1px solid var(--border); 
+            color: var(--text); outline: none; transition: 0.3s;
+        }
+        footer input:focus { border-color: var(--text); }
+        .btn-submit { 
+            background: var(--text); color: var(--bg); border: none; 
+            padding: 0 25px; font-weight: 800; text-transform: uppercase; 
+            font-size: 0.65rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-submit:hover { background: var(--accent); color: white; }
+
+        .footer-col li { margin-bottom: 15px; }
+        .footer-col li a { opacity: 0.6; font-size: 0.9rem; transition: 0.3s; display: inline-block; }
+        .footer-col li:hover a { opacity: 1; color: var(--accent); transform: translateX(5px); }
+
+        .footer-bottom { padding-top: 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 0.75rem; opacity: 0.4; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1024px) {
+            nav { grid-template-columns: auto 1fr; }
+            .nav-links { display: none; position: absolute; top: 85px; left: 0; width: 100%; background: var(--bg); flex-direction: column; padding: 40px; border-bottom: 1px solid var(--border); }
+            .nav-links.active { display: flex; }
+            .mobile-toggle { display: block; order: 3; margin-left: 20px; }
+            .nav-right { margin-left: auto; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-content">
+            <h2 class="serif" style="font-size: 2.2rem; letter-spacing: 4px;">SHECODEZ</h2>
+            <div class="loader-line"></div>
+        </div>
+    </div>
+
+    <div id="wattpad-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 class="serif">In Progress</h2>
+            <p>This manuscript is currently undergoing a rigorous editorial process. For live updates and chapter drops, follow the journey on Wattpad.</p>
+            <a href="https://www.wattpad.com/sheCodezArt" target="_blank" class="wattpad-link">Follow on Wattpad</a>
+        </div>
+    </div>
+
+    <nav>
+        <div class="logo">sheCodez</div>
+        <div class="nav-links" id="navLinks">
+            <a href="#">Library</a>
+            <a href="#">Archives</a>
+            <a href="#">Authors</a>
+            <a href="#">Submissions</a>
+            <a href="#">Journal</a>
+        </div>
+        <div class="nav-right">
+            <div style="font-size: 0.6rem; font-weight: 700; opacity: 0.5; letter-spacing: 1px;" class="hide-mobile">
+                <span class="status-dot"></span> LIVE
+            </div>
+            <button class="theme-toggle" onclick="toggleTheme()">DARK MODE</button>
+            <div class="mobile-toggle" onclick="toggleMenu()">☰</div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <p style="color: var(--accent); font-weight: 800; font-size: 0.75rem; letter-spacing: 3px; margin-bottom: 1.5rem;">GLOBAL ARCHIVE 2026</p>
+        <h1>The Immortal<br><i class="serif">Manuscript.</i></h1>
+    </section>
+
+    <main class="grid-section">
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1543004218-ee141104338e?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>The Child Is Mine</h3><span class="price">$42.00</span></div>
+                <p class="category-line">Genre: Ghotic</p>
+            </div>
+        </div>
+
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>Emberborn</h3><span class="price">$38.00</span></div>
+                <p class="category-line">Genre: Ghotic</p>
+            </div>
+        </div>
+
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1474932430478-3a7fb0100ef3?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>Shayne & Lucita</h3><span class="price">$35.00</span></div>
+                <p class="category-line">Genre: Romance</p>
+            </div>
+        </div>
+
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>The Leper King</h3><span class="price">$45.00</span></div>
+                <p class="category-line">Genre: Historical</p>
+            </div>
+        </div>
+
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>Identical Twins</h3><span class="price">$29.00</span></div>
+                <p class="category-line">Genre: Romance</p>
+            </div>
+        </div>
+
+        <div class="novel-card">
+            <div class="card-img">
+                <img src="https://images.unsplash.com/photo-1531346878377-a5be20888e57?q=80&w=800">
+                <div class="card-hover-info">
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus, sapien in dignissim cursus.</p>
+                    <div class="btn-ghost" onclick="openModal()">View Details</div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-header"><h3>They're Here</h3><span class="price">$50.00</span></div>
+                <p class="category-line">Genre: Ghotic</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h2 class="serif" style="font-size: 2.5rem; line-height: 1; margin-bottom: 25px;">Stay Curated.</h2>
+                <p style="font-size: 0.9rem; opacity: 0.6; max-width: 300px;">Join our circle of readers to receive notifications of new drops.</p>
+                <div class="newsletter-wrap">
+                    <input type="email" placeholder="Enter email">
+                    <button class="btn-submit">Subscribe</button>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="#">Recent Drops</a></li>
+                    <li><a href="#">The Classic Vault</a></li>
+                    <li><a href="#">Experimental</a></li>
+                    <li><a href="#">Audio Archive</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Information</h4>
+                <ul>
+                    <li><a href="#">Our Manifesto</a></li>
+                    <li><a href="#">Author Rights</a></li>
+                    <li><a href="#">Membership</a></li>
+                    <li><a href="#">Privacy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="https://x.com/sheCodezArt">Twitter / X</a></li>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">RSS Feed</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 AURELIUS ARCHIVE — ALL RIGHTS RESERVED</p>
+            <p>DESIGNED BY SHECODEZ</p>
+        </div>
+    </footer>
+
+    <script>
+        // Modal Controls
+        const modal = document.getElementById('wattpad-modal');
+        function openModal() { modal.style.display = 'flex'; }
+        function closeModal() { modal.style.display = 'none'; }
+        
+        // Navigation Controls
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('active');
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.body.classList.add('loaded'); }, 1200);
+        });
+
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.querySelector('.theme-toggle').innerText = isDark ? 'DARK MODE' : 'LIGHT MODE';
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    if (entry.target.classList.contains('footer-col')) {
+                        setTimeout(() => { entry.target.classList.add('visible'); }, index * 150);
+                    } else {
+                        entry.target.classList.add('visible');
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.novel-card, .footer-col').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

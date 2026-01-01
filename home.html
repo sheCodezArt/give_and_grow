@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Invest in the Future — Education Fundraiser</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary: #1a5f7a; /* Academic Deep Blue */
+    --primary-light: #f0f7f9;
+    --accent: #f2994a; /* Professional Orange */
+    --success: #27ae60;
+    --text: #2c3e50;
+    --card-bg: #ffffff;
+    --radius: 16px;
+    --shadow: 0 12px 40px rgba(0,0,0,0.08);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; transition: all 0.2s ease; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #f8fafc; color: var(--text); line-height: 1.6; }
+
+  /* --- Navigation --- */
+  header {
+    background: white; border-bottom: 1px solid #e2e8f0;
+    position: sticky; top: 0; z-index: 1000;
+  }
+  .nav-container {
+    max-width: 1200px; margin: 0 auto; padding: 1rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo-area { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .logo-icon { 
+    background: var(--primary); color: white; padding: 10px; border-radius: 12px;
+    font-size: 1.2rem; box-shadow: 0 4px 10px rgba(26, 95, 122, 0.3);
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; margin: 0; }
+  .nav-links a { text-decoration: none; color: var(--text); font-weight: 500; font-size: 0.95rem; }
+  .nav-links a:hover { color: var(--primary); }
+
+  /* --- Hero / Main Header --- */
+  .hero {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3rem;
+    max-width: 1200px; margin: 3rem auto; padding: 0 1rem;
+  }
+  .hero-img { width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* --- Campaign Card (Sticky) --- */
+  .sticky-card {
+    background: white; padding: 2rem; border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid #edf2f7;
+    position: sticky; top: 100px;
+  }
+  .progress-container { height: 12px; background: #edf2f7; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+  .progress-bar { height: 100%; width: 45%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 10px; }
+
+  /* --- Grid Sections --- */
+  .content-grid {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 3rem;
+    max-width: 1200px; margin: 0 auto; padding: 0 1rem;
+  }
+
+  /* --- Typography --- */
+  h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem; line-height: 1.1; }
+  h2 { font-size: 1.8rem; margin-top: 2.5rem; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+  .badge { background: var(--primary-light); color: var(--primary); padding: 5px 15px; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+
+  /* --- Donation Form --- */
+  .amount-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+  .amt-btn { 
+    padding: 15px; border: 2px solid #edf2f7; background: white; border-radius: 12px;
+    cursor: pointer; font-weight: 700; color: var(--text);
+  }
+  .amt-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+  
+  .input-group { margin-bottom: 1.5rem; }
+  input[type="text"], input[type="email"], input[type="number"], select {
+    width: 100%; padding: 14px; border: 2px solid #edf2f7; border-radius: 10px; font-size: 1rem;
+  }
+  input:focus { outline: none; border-color: var(--primary); }
+
+  .btn-main {
+    width: 100%; padding: 18px; border: none; border-radius: 12px;
+    background: var(--primary); color: white; font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; box-shadow: 0 8px 20px rgba(26, 95, 122, 0.2);
+  }
+  .btn-main:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(26, 95, 122, 0.3); }
+
+  /* --- Donor Wall --- */
+  .donor-wall { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.5rem; }
+  .donor-card { 
+    display: flex; align-items: center; gap: 15px; padding: 1rem; 
+    background: white; border-radius: 12px; border: 1px solid #f1f5f9;
+  }
+  .donor-avatar { width: 40px; height: 40px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+  /* --- Table --- */
+  .expense-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .expense-table th { text-align: left; padding: 12px; background: var(--primary-light); }
+  .expense-table td { padding: 12px; border-bottom: 1px solid #edf2f7; }
+
+  /* --- Mobile Responsive --- */
+  @media (max-width: 900px) {
+    .hero, .content-grid { grid-template-columns: 1fr; }
+    .hero-img { height: 250px; object-fit: cover; }
+    .nav-links { display: none; }
+    .sticky-card { position: static; }
+  }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+  .modal-content { background: white; padding: 2.5rem; border-radius: 20px; max-width: 500px; width: 100%; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="nav-container">
+    <a href="#" class="logo-area">
+      <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+      <span style="font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px;">StudentFund</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#story">The Story</a></li>
+      <li><a href="#transparency">Transparency</a></li>
+      <li><a href="#donate">Donate</a></li>
+      <li><a href="javascript:void(0)" onclick="openAdmin()">Admin Portal</a></li>
+    </ul>
+    <button class="btn-main" style="width:auto; padding: 10px 20px; font-size: 0.9rem;" onclick="location.href='#donate'">Give Support</button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div>
+    <span class="badge">Education Fundraiser</span>
+    <h1>Empowering Future Innovation: Support My Journey to MIT</h1>
+    <p style="font-size: 1.2rem; color: #64748b;">I have been accepted into the Master's of AI program, but I need your help to bridge the tuition gap. Your investment is an investment in future technology.</p>
+    <img src="https://images.unsplash.com/photo-1523050335392-9bef867a0578?w=1000&auto=format&fit=crop" class="hero-img" alt="University Campus">
+  </div>
+  
+  <div class="hero-right">
+    <div class="sticky-card">
+      <div style="font-size: 2rem; font-weight: 800; color: var(--primary);" id="displayRaised">$12,450</div>
+      <div style="color: #64748b;">raised of <strong>$45,000</strong> goal</div>
+      
+      <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+        <span><strong id="displayDonors">128</strong> Donors</span>
+        <span><strong>14</strong> Days Left</span>
+      </div>
+
+      <button class="btn-main" onclick="scrollToSection('#donate')">Donate Now</button>
+      
+      <div style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button class="amt-btn" style="padding: 8px;" onclick="sharePage()"><i class="fas fa-share"></i> Share</button>
+        <button class="amt-btn" style="padding: 8px;" onclick="scrollToSection('#story')"><i class="fas fa-info-circle"></i> Story</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-grid">
+  <div class="main-content">
+    <section id="story">
+      <h2>The Story</h2>
+      <p>Ever since I was a child in a small town, I dreamed of using technology to solve real-world problems. After years of hard work, I’ve been accepted into my dream program. However, as an independent student, the financial burden is significant.</p>
+      <p>This fund will directly cover my tuition for the first two semesters. By supporting me, you aren't just paying for a degree—you're supporting research into sustainable AI that I plan to conduct during my tenure.</p>
+      
+      <h3>Key Milestones</h3>
+      <ul style="padding-left: 20px; color: #475569;">
+        <li><strong>Phase 1:</strong> Tuition Enrollment ($20,000)</li>
+        <li><strong>Phase 2:</strong> Research Materials & Books ($5,000)</li>
+        <li><strong>Phase 3:</strong> Living Expenses & Housing ($20,000)</li>
+      </ul>
+    </section>
+
+    <section id="transparency">
+      <h2>Budget Transparency</h2>
+      <p>I believe in 100% transparency. Here is exactly where your money goes:</p>
+      <table class="expense-table">
+        <thead>
+          <tr><th>Category</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tuition Fees</td><td>$32,000</td><td><span style="color:var(--accent)">Pending</span></td></tr>
+          <tr><td>International Health Insurance</td><td>$2,400</td><td><span style="color:var(--success)">Paid</span></td></tr>
+          <tr><td>Lab Equipment</td><td>$1,500</td><td><span style="color:var(--accent)">Pending</span></td></tr>
+          <tr><td>Textbooks</td><td>$800</td><td><span style="color:var(--accent)">Pending</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="donate">
+      <h2>Make a Donation</h2>
+      <div style="background: white; padding: 2rem; border-radius: var(--radius); border: 1px solid #e2e8f0;">
+        <div class="amount-buttons">
+          <button class="amt-btn" onclick="setAmt(25, this)">$25</button>
+          <button class="amt-btn" onclick="setAmt(50, this)">$50</button>
+          <button class="amt-btn" onclick="setAmt(100, this)">$100</button>
+          <button class="amt-btn active" onclick="setAmt(250, this)">$250</button>
+          <button class="amt-btn" onclick="setAmt(500, this)">$500</button>
+          <input type="number" id="customAmt" placeholder="Custom" oninput="clearActiveBtns()">
+        </div>
+
+        <div class="input-group">
+          <label>Full Name (Optional)</label>
+          <input type="text" id="donorName" placeholder="Anonymous">
+        </div>
+
+        <div class="input-group">
+          <label>Your Email (For Receipt)</label>
+          <input type="email" id="donorEmail" placeholder="your@email.com">
+        </div>
+
+        <div class="input-group">
+          <label>Message of Support</label>
+          <textarea id="donorMsg" style="width:100%; height:100px; border:2px solid #edf2f7; border-radius:10px; padding:10px;"></textarea>
+        </div>
+
+        <button class="btn-main" onclick="handleDonate()">Complete Donation</button>
+        <p style="font-size: 0.8rem; text-align: center; color: #94a3b8; margin-top: 1rem;">This is a simulated secure payment. No real money will be charged.</p>
+      </div>
+    </section>
+  </div>
+
+  <aside class="sidebar">
+    <h2>Recent Donors</h2>
+    <div id="donorWall" class="donor-wall">
+      </div>
+
+    <div style="margin-top: 3rem; background: var(--primary); color: white; padding: 1.5rem; border-radius: var(--radius);">
+      <h3>Academic Bio</h3>
+      <p style="font-size: 0.9rem; opacity: 0.9;">GPA: 3.98/4.00<br>B.S. in Computer Science<br>Volunteer: Code.org Mentor</p>
+      <hr style="opacity: 0.2;">
+      <p style="font-size: 0.8rem;">"Education is the most powerful weapon which you can use to change the world."</p>
+    </div>
+  </aside>
+</div>
+
+<div id="successModal" class="modal-overlay">
+  <div class="modal-content">
+    <div style="font-size: 4rem; color: var(--success);"><i class="fas fa-check-circle"></i></div>
+    <h2>Thank You!</h2>
+    <p id="successText"></p>
+    <button class="btn-main" onclick="closeModal()">Close</button>
+    <button class="amt-btn" style="margin-top:10px; width:100%" onclick="downloadReceipt()">Download Receipt</button>
+  </div>
+</div>
+
+<div id="adminModal" class="modal-overlay">
+  <div class="modal-content" style="max-width: 800px; text-align: left;">
+    <h2>Admin Dashboard</h2>
+    <div id="adminData" style="max-height: 400px; overflow-y: auto;"></div>
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button class="btn-main" onclick="closeAdmin()">Exit</button>
+      <button class="amt-btn" onclick="resetSystem()">Reset Demo</button>
+    </div>
+  </div>
+</div>
+
+<footer style="margin-top: 5rem; padding: 3rem 1rem; background: #f1f5f9; text-align: center;">
+  <p style="font-weight: 600;">Student Education Fund — 2025</p>
+  <p style="color: #64748b; font-size: 0.9rem;">This is a personal portfolio project and simulation.</p>
+</footer>
+
+<script>
+  // -- APP STATE --
+  let totalGoal = 45000;
+  let currentRaised = 12450;
+  let currentDonors = 128;
+  let selectedAmt = 250;
+  let donorsList = [
+    { name: "Dr. Sarah Smith", amount: 500, msg: "Best of luck with your studies!", date: new Date() },
+    { name: "Global Tech Inc.", amount: 2000, msg: "Supporting the next gen.", date: new Date() },
+    { name: "Uncle Bob", amount: 100, msg: "So proud of you!", date: new Date() }
+  ];
+
+  // -- INIT --
+  window.onload = () => {
+    updateProgressUI();
+    renderDonors();
+    loadFromStorage();
+  };
+
+  // -- CORE FUNCTIONS --
+  function setAmt(val, btn) {
+    selectedAmt = val;
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('customAmt').value = '';
+  }
+
+  function clearActiveBtns() {
+    document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+    selectedAmt = 0;
+  }
+
+  function handleDonate() {
+    const name = document.getElementById('donorName').value || "Anonymous";
+    const email = document.getElementById('donorEmail').value;
+    const msg = document.getElementById('donorMsg').value;
+    const finalAmt = selectedAmt || parseInt(document.getElementById('customAmt').value);
+
+    if (!finalAmt || finalAmt <= 0) return alert("Please select an amount");
+    if (!email) return alert("Email required for receipt");
+
+    // Process Donation
+    currentRaised += finalAmt;
+    currentDonors += 1;
+    const newDonor = { name, amount: finalAmt, msg, email, date: new Date() };
+    donorsList.unshift(newDonor);
+
+    // Persistence
+    saveToStorage();
+    
+    // UI Update
+    updateProgressUI();
+    renderDonors();
+    
+    // Success Modal
+    document.getElementById('successText').innerText = `Your donation of $${finalAmt} was processed successfully. A receipt has been sent to ${email}.`;
+    document.getElementById('successModal').style.display = 'flex';
+  }
+
+  function updateProgressUI() {
+    document.getElementById('displayRaised').innerText = `$${currentRaised.toLocaleString()}`;
+    document.getElementById('displayDonors').innerText = currentDonors;
+    const pct = Math.min((currentRaised / totalGoal) * 100, 100);
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  function renderDonors() {
+    const wall = document.getElementById('donorWall');
+    wall.innerHTML = donorsList.slice(0, 5).map(d => `
+      <div class="donor-card">
+        <div class="donor-avatar">${d.name[0]}</div>
+        <div>
+          <div style="font-weight:700">${d.name} <span style="color:var(--success); margin-left:10px">$${d.amount}</span></div>
+          <div style="font-size:0.8rem; color:#64748b">"${d.msg || 'Supported this cause'}"</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function scrollToSection(id) {
+    document.querySelector(id).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+  }
+
+  function sharePage() {
+    if (navigator.share) {
+      navigator.share({ title: 'Support My Education', url: window.location.href });
+    } else {
+      alert("Link copied to clipboard!");
+    }
+  }
+
+  // -- ADMIN SYSTEM --
+  function openAdmin() {
+    const pass = prompt("Enter Admin Password (1234):");
+    if(pass !== "1234") return alert("Access Denied");
+    
+    const adminData = document.getElementById('adminData');
+    adminData.innerHTML = `
+      <table class="expense-table">
+        <tr><th>Name</th><th>Email</th><th>Amount</th><th>Date</th></tr>
+        ${donorsList.map(d => `<tr><td>${d.name}</td><td>${d.email || 'N/A'}</td><td>$${d.amount}</td><td>${new Date(d.date).toLocaleDateString()}</td></tr>`).join('')}
+      </table>
+    `;
+    document.getElementById('adminModal').style.display = 'flex';
+  }
+
+  function closeAdmin() {
+    document.getElementById('adminModal').style.display = 'none';
+  }
+
+  function resetSystem() {
+    localStorage.clear();
+    location.reload();
+  }
+
+  // -- STORAGE --
+  function saveToStorage() {
+    localStorage.setItem('raised', currentRaised);
+    localStorage.setItem('donorsCount', currentDonors);
+    localStorage.setItem('donorsList', JSON.stringify(donorsList));
+  }
+
+  function loadFromStorage() {
+    if(localStorage.getItem('raised')) {
+      currentRaised = parseInt(localStorage.getItem('raised'));
+      currentDonors = parseInt(localStorage.getItem('donorsCount'));
+      donorsList = JSON.parse(localStorage.getItem('donorsList'));
+      updateProgressUI();
+      renderDonors();
+    }
+  }
+
+  function downloadReceipt() {
+    const d = donorsList[0];
+    const text = `OFFICIAL DONATION RECEIPT\n\nTo: ${d.name}\nAmount: $${d.amount}\nDate: ${new Date().toLocaleString()}\nPurpose: Education Fundraiser\nStatus: Simulated Paid\n\nThank you for changing a life!`;
+    const blob = new Blob([text], {type: "text/plain"});
+    const anchor = document.createElement("a");
+    anchor.download = "receipt.txt";
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.click();
+  }
+</script>
+</body>
+</html>
