@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science Fund | Laptop Campaign</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --glass: rgba(15, 15, 15, 0.8);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html {
+          scroll-behavior: smooth;
+        }
+        body { font-family: 'Space Grotesk', sans-serif; background: #050505; color: white; overflow-x: hidden; }
+
+        /* --- 3D CANVAS STYLING --- */
+        #bg-canvas { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
+
+        /* --- NAVIGATION --- */
+        header {
+            position: fixed; top: 0; width: 100%; height: 80px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; z-index: 2000;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        .hamburger { 
+            cursor: pointer; width: 40px; height: 40px; 
+            display: flex; flex-direction: column; justify-content: center; gap: 8px; 
+        }
+        .hamburger div { width: 100%; height: 2px; background: white; transition: 0.4s; }
+
+        /* 3D NAV OVERLAY */
+        .nav-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--secondary);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1500;
+            transform-origin: top;
+            transform: rotateX(-90deg); /* Hidden state */
+            visibility: hidden;
+            transition: visibility 0.5s;
+        }
+        .nav-overlay.open { visibility: visible; }
+        .nav-overlay a {
+            color: white; font-size: 3rem; text-decoration: none; font-weight: 700;
+            margin: 15px 0; transition: 0.3s;
+        }
+        .nav-overlay a:hover { color: var(--primary); transform: skewX(-10deg); }
+
+        /* --- CONTENT SECTIONS --- */
+        section { min-height: 100vh; padding: 120px 10% 60px; display: flex; align-items: center; }
+
+        .hero-box { max-width: 800px; }
+        .hero-box h1 { font-size: clamp(3rem, 8vw, 5rem); line-height: 0.9; margin-bottom: 25px; }
+        .hero-box p { font-size: 1.2rem; color: #aaa; margin-bottom: 40px; line-height: 1.6; }
+
+        .dashboard {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; width: 100%;
+        }
+        .card {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 40px; border-radius: 30px; backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .card h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.8rem; }
+        .progress-container { margin: 30px 0; }
+        .progress-bar { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+        .fill { width: 5%; height: 100%; background: var(--primary); box-shadow: 0 0 20px var(--primary); }
+
+        .btn {
+            background: var(--primary); color: #000; padding: 18px 35px;
+            border-radius: 100px; font-weight: 700; text-decoration: none;
+            display: inline-block; transition: 0.3s;
+        }
+        .btn:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--primary); }
+
+        /* --- FOOTER --- */
+        footer {
+            background: #000; border-top: 1px solid var(--border);
+            padding: 80px 10%; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 40px; transform: perspective(1000px) rotateX(10deg);
+        }
+        .footer-col h4 { margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; color: #555; }
+        .social-link {
+            display: flex; align-items: center; gap: 15px; color: white;
+            text-decoration: none; margin-bottom: 15px; transition: 0.3s;
+        }
+        .social-link:hover { color: var(--primary); transform: translateX(10px); }
+        .social-link i { width: 20px; color: var(--primary); }
+
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<header>
+    <div class="logo"><i data-lucide="database"></i> DS_FUND</div>
+    <div class="hamburger" id="menuToggle">
+        <div id="line1"></div>
+        <div id="line2"></div>
+    </div>
+</header>
+
+<div class="nav-overlay" id="navOverlay">
+    <a href="#hero">HOME</a>
+    <a href="#about">THE MISSION</a>
+    <a href="#donate">DONATE</a>
+    <a href="#contact">CONNECT</a>
+</div>
+
+<section id="hero">
+    <div class="hero-box">
+        <h1 id="title">POWERING <br><span style="color: var(--primary);">DATA SCIENCE</span></h1>
+        <p>Currently pursuing data science and  analytics, but held back by hardware. I am raising funds for a workstation capable of training AI models and processing massive datasets.</p>
+        <a href="#donate" class="btn">GIVE NOW</a>
+    </div>
+</section>
+
+<section id="donate">
+    <div class="dashboard">
+        <div class="card">
+            <h2>Campaign Status</h2>
+            <div class="progress-container">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Target: $2,500</span>
+                    <span>0%</span>
+                </div>
+                <div class="progress-bar"><div class="fill"></div></div>
+            </div>
+            <p><strong>0</strong> Donators so far. Be the pioneer of this journey.</p>
+        </div>
+        <div class="card">
+            <h2>Direct Support</h2>
+            <p>Transfer via Bank Details:</p>
+            <p style="background: #111; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                Bank: <strong>NEO GLOBAL BANK</strong><br>
+                Acct: <strong>0091827364</strong><br>
+                Type: <strong>SAVINGS</strong>
+            </p>
+            <a href="#" class="btn" style="background: transparent; border: 2px solid var(--primary); color: white;">Get Payment Link</a>
+        </div>
+    </div>
+</section>
+
+<footer id="contact">
+    <div class="footer-col">
+        <h4>Content</h4>
+        <a href="#" class="social-link"><i data-lucide="book-open"></i> Wattpad</a>
+        <a href="#" class="social-link"><i data-lucide="youtube"></i> YouTube</a>
+    </div>
+    <div class="footer-col">
+        <h4>Social</h4>
+        <a href="#" class="social-link"><i data-lucide="twitter"></i> Twitter</a>
+        <a href="#" class="social-link"><i data-lucide="video"></i> TikTok</a>
+    </div>
+    <div class="footer-col">
+        <h4>Direct</h4>
+        <a href="#" class="social-link"><i data-lucide="message-circle"></i> WhatsApp</a>
+        <a href="#" class="social-link"><i data-lucide="briefcase"></i> Portfolio</a>
+    </div>
+</footer>
+
+<script>
+    lucide.createIcons();
+
+    // --- GSAP NAVIGATION LOGIC ---
+    const menuToggle = document.getElementById('menuToggle');
+    const navOverlay = document.getElementById('navOverlay');
+    const line1 = document.getElementById('line1');
+    const line2 = document.getElementById('line2');
+    let isMenuOpen = false;
+
+    menuToggle.addEventListener('click', () => {
+        if (!isMenuOpen) {
+            gsap.to(navOverlay, { rotateX: 0, duration: 0.8, ease: "expo.out" });
+            gsap.to(line1, { rotate: 45, y: 5 });
+            gsap.to(line2, { rotate: -45, y: -5 });
+            navOverlay.classList.add('open');
+        } else {
+            gsap.to(navOverlay, { rotateX: -90, duration: 0.6, ease: "power2.in" });
+            gsap.to(line1, { rotate: 0, y: 0 });
+            gsap.to(line2, { rotate: 0, y: 0 });
+            setTimeout(() => navOverlay.classList.remove('open'), 600);
+        }
+        isMenuOpen = !isMenuOpen;
+    });
+
+    // Close menu on link click
+    document.querySelectorAll('.nav-overlay a').forEach(link => {
+        link.addEventListener('click', () => menuToggle.click());
+    });
+
+    // --- THREE.JS 3D SCENE ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const shapes = [];
+    const geometryTypes = [
+        new THREE.BoxGeometry(1.5, 1.5, 1.5),
+        new THREE.SphereGeometry(1, 32, 32),
+        new THREE.ConeGeometry(1, 2, 32),
+        new THREE.TorusGeometry(1, 0.3, 16, 100)
+    ];
+
+    for(let i=0; i<30; i++) {
+        const material = new THREE.MeshNormalMaterial({ wireframe: true });
+        const shape = new THREE.Mesh(geometryTypes[Math.floor(Math.random()*geometryTypes.length)], material);
+        shape.position.set((Math.random()-0.5)*25, (Math.random()-0.5)*25, (Math.random()-0.5)*25);
+        shape.rotation.set(Math.random(), Math.random(), Math.random());
+        scene.add(shape);
+        shapes.push(shape);
+    }
+
+    camera.position.z = 12;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        shapes.forEach(s => {
+            s.rotation.x += 0.005;
+            s.rotation.y += 0.005;
+        });
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    // Resize Handler
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
